@@ -29,6 +29,26 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+<!--		<dependency>
+			<groupId>org.apache.tinkerpop</groupId>
+			<artifactId>gremlin-core</artifactId>
+			<version>3.4.3</version>
+		</dependency>-->
+		<dependency>
+			<groupId>org.apache.tinkerpop</groupId>
+			<artifactId>gremlin-driver</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.59</version>
+		</dependency>
+		<dependency>
+			<groupId>org.janusgraph</groupId>
+			<artifactId>janusgraph-core</artifactId>
+			<version>0.4.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

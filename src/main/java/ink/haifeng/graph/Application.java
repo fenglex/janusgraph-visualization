@@ -1,13 +1,13 @@
-package ink.haifeng.graph.janusgraphvisualization;
+package ink.haifeng.graph;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JanusgraphVisualizationApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(JanusgraphVisualizationApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }
