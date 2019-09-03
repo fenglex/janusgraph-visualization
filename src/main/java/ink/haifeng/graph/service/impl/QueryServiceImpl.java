@@ -8,6 +8,7 @@ import ink.haifeng.graph.entity.GraphVertex;
 import ink.haifeng.graph.entity.QueryResult;
 import ink.haifeng.graph.service.QueryService;
 import ink.haifeng.graph.util.GraphUtil;
+import ink.haifeng.graph.util.GremlinUtil;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
@@ -32,11 +33,8 @@ import java.util.Map;
 @Service
 public class QueryServiceImpl implements QueryService {
 
-    @Autowired
-    private Client client;
 
-    @Override
-    public GraphVertex queryVertex(String id) {
+    private GraphVertex queryVertex(Client client, String id) {
         String gremlin = String.format("g.V('%s')", id);
         ResultSet set = client.submit(gremlin);
         Iterator<Result> iterator = set.iterator();
@@ -48,8 +46,7 @@ public class QueryServiceImpl implements QueryService {
         return null;
     }
 
-    @Override
-    public GraphEdge queryEdge(String id) {
+    private GraphEdge queryEdge(Client client, String id) {
         String gremlin = String.format("g.E('%s')", id);
         ResultSet set = client.submit(gremlin);
         Iterator<Result> iterator = set.iterator();
@@ -57,9 +54,9 @@ public class QueryServiceImpl implements QueryService {
             Result next = iterator.next();
             Edge edge = next.getEdge();
             GraphEdge graphEdge = GraphUtil.convert(edge);
-            GraphVertex graphVertex = queryVertex(edge.inVertex().id().toString());
+            GraphVertex graphVertex = queryVertex(client, edge.inVertex().id().toString());
             graphEdge.setTo(graphVertex);
-            GraphVertex outGraphVertex = queryVertex(edge.outVertex().id().toString());
+            GraphVertex outGraphVertex = queryVertex(client, edge.outVertex().id().toString());
             graphEdge.setFrom(outGraphVertex);
             return graphEdge;
         }
@@ -67,7 +64,8 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public QueryResult query(String gremlin) {
+    public QueryResult query(String host, int port, String gremlin) {
+        Client client = GremlinUtil.client(host, port);
         ResultSet set = client.submit(gremlin);
         QueryResult result = new QueryResult();
         StringBuilder builder = new StringBuilder();
@@ -82,7 +80,7 @@ public class QueryServiceImpl implements QueryService {
                 result.getVertices().add(GraphUtil.convert(vertex));
             } else if (obj instanceof Edge) {
                 Edge edge = next.getEdge();
-                GraphEdge graphEdge = queryEdge(edge.id().toString());
+                GraphEdge graphEdge = queryEdge(client, edge.id().toString());
                 result.getEdges().add(graphEdge);
             } else if (obj instanceof VertexProperty) {
                 VertexProperty<Object> property = next.getVertexProperty();
@@ -106,11 +104,11 @@ public class QueryServiceImpl implements QueryService {
                 for (Object next1 : path) {
                     if (next1 instanceof Vertex) {
                         Vertex vertex = (Vertex) next1;
-                        GraphVertex graphVertex = queryVertex(vertex.id().toString());
+                        GraphVertex graphVertex = queryVertex(client, vertex.id().toString());
                         result.getVertices().add(graphVertex);
                     } else {
                         Edge edge = (Edge) next1;
-                        GraphEdge graphEdge = queryEdge(edge.id().toString());
+                        GraphEdge graphEdge = queryEdge(client, edge.id().toString());
                         result.getEdges().add(graphEdge);
                     }
                 }

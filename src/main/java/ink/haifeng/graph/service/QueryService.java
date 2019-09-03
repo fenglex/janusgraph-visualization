@@ -1,7 +1,5 @@
 package ink.haifeng.graph.service;
 
-import ink.haifeng.graph.entity.GraphEdge;
-import ink.haifeng.graph.entity.GraphVertex;
 import ink.haifeng.graph.entity.QueryResult;
 
 /**
@@ -10,9 +8,6 @@ import ink.haifeng.graph.entity.QueryResult;
  */
 public interface QueryService {
 
-    GraphVertex queryVertex(String id);
 
-    GraphEdge queryEdge(String id);
-
-    QueryResult query(String gremlin);
+    QueryResult query(String host,int port,String gremlin);
 }
