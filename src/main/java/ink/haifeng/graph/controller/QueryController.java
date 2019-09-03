@@ -17,8 +17,8 @@ public class QueryController {
     private QueryService queryService;
 
     @RequestMapping("/query")
-    public String search(String q) {
-        return JSON.toJSONString(queryService.query(q));
+    public String search(String host, int port, String gremlin) {
+        return JSON.toJSONString(queryService.query(gremlin));
     }
 
 
