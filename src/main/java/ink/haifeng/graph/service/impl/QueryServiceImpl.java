@@ -55,9 +55,11 @@ public class QueryServiceImpl implements QueryService {
             Edge edge = next.getEdge();
             GraphEdge graphEdge = GraphUtil.convert(edge);
             GraphVertex graphVertex = queryVertex(client, edge.inVertex().id().toString());
+            graphEdge.setTarget(graphVertex.getId());
             graphEdge.setTo(graphVertex);
             GraphVertex outGraphVertex = queryVertex(client, edge.outVertex().id().toString());
             graphEdge.setFrom(outGraphVertex);
+            graphEdge.setSource(outGraphVertex.getId());
             return graphEdge;
         }
         return null;
@@ -114,7 +116,9 @@ public class QueryServiceImpl implements QueryService {
                 }
             }
         }
+        result.merge();
         result.setResult(builder.toString());
+        client.close();
         return result;
     }
 }

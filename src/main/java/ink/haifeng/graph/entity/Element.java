@@ -1,5 +1,6 @@
 package ink.haifeng.graph.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @Data
 public class Element {
+    @JSONField(name = "name")
     private String id;
     private String label;
     private Map<String, String> properties = new HashMap<>(5);

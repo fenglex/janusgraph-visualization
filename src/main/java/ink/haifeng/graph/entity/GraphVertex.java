@@ -3,13 +3,14 @@ package ink.haifeng.graph.entity;
 import lombok.Data;
 
 
-
 /**
  * @Author: haifeng
  * @Date: 2019-08-30 16:50
  */
 @Data
 public class GraphVertex extends Element {
+    private boolean draggable = true;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -1,6 +1,6 @@
 package ink.haifeng.graph.controller;
 
-import com.alibaba.fastjson.JSON;
+import ink.haifeng.graph.entity.QueryResult;
 import ink.haifeng.graph.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +17,8 @@ public class QueryController {
     private QueryService queryService;
 
     @RequestMapping("/query")
-    public String search(String host, int port, String gremlin) {
-        return JSON.toJSONString(queryService.query(host, port, gremlin));
+    public QueryResult search(String host, int port, String gremlin) {
+        return queryService.query(host, port, gremlin);
     }
 
 

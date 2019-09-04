@@ -7,7 +7,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="layui/css/layui.css" media="all">
-    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->\
+    <style>
+        .layui-layer-dialog .layui-layer-content {
+            line-height: 18px;
+            padding: 5px;
+        }
+
+        .layui-layer-btn {
+            padding: 0px;
+        }
+    </style>
 </head>
 <body>
 <div style="padding: 5px; background-color: #F2F2F2;padding-bottom: 3px;">
@@ -16,12 +26,12 @@
             <div class="layui-card">
                 <div class="layui-card-header">Gremlin语句</div>
                 <div class="layui-card-body">
-                    <div><textarea placeholder="请输入内容" class="layui-textarea"></textarea></div>
+                    <div><textarea id="gremlin" placeholder="请输入内容" class="layui-textarea"></textarea></div>
                 </div>
                 <div class="layui-card-body">
                     <div class="layui-row " style="height: 35px;">
                         <div class="layui-col-md1 layui-col-md-offset11">
-                            <button type="button" class="layui-btn layui-btn-sm layui-layout-right">执行</button>
+                            <button id="exec" type="button" class="layui-btn layui-btn-sm layui-layout-right">执行</button>
                         </div>
                     </div>
                 </div>
@@ -31,7 +41,7 @@
 </div>
 <div style="padding: 5px; background-color: #F2F2F2;">
     <div class="layui-row layui-col-space15">
-        <div class="layui-col-md3">
+        <div class="layui-col-md2">
             <div class="layui-card">
                 <div class="layui-card-header">查询结果</div>
                 <div class="layui-card-body" id="result">
@@ -39,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="layui-col-md9">
+        <div class="layui-col-md10">
             <div class="layui-card">
                 <div class="layui-card-body" id="graph">
 
@@ -49,14 +59,18 @@
     </div>
 
 </div>
-<div class="layui-row layui-fixbar">
-    <div class="layui-col-md12"><a href="https://github.com/fenglex/janusgraph-visualization">源码链接(https://github.com/fenglex/janusgraph-visualization)</a></div>
+<div class="layui-row">
+    <div class="layui-col-md6 layui-col-md-offset1"><a href="https://github.com/fenglex/janusgraph-visualization">源码链接(https://github.com/fenglex/janusgraph-visualization)</a>
+    </div>
 
 </div>
+<script src="jquery-3.4.1.min.js" charset="utf-8"></script>
 <script src="layui/layui.all.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts.min.js" charset="utf-8"></script>
+
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 <script>
-    layui.use(['element', 'layer'], function() {
+    layui.use(['element', 'layer'], function () {
         var element = layui.element;
         var layer = layui.layer;
 
@@ -71,8 +85,132 @@
         gh = (wh - c) + "px";
         document.getElementById("graph").style.height = gh;
     }
+
+
+    function c_format(key, value, property) {
+        return key + "\t" + value + "\t" + property;
+    }
+
     window.onload = getContentSize;
     window.onresize = getContentSize;
+    $("#exec").click(function () {
+        var gremlin = $("#gremlin").val().trim();
+        if (gremlin.length < 3) {
+            return;
+        }
+        $.ajax({
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            //请求地址
+            url: "/query",
+            //数据，json字符串
+            data: {host: '127.0.0.1', port: 8182, gremlin: gremlin},
+            dataType: "json",
+            //请求成功
+            success: function (result) {
+                $("#result").html(result.result.replace(/\n/g, "<br/>"));
+                var myChart = echarts.init(document.getElementById('graph'));
+                option = {
+                    title: {
+                        text: ''
+                    },
+                    tooltip: {
+                        formatter: function (param) {
+                            return "id:" + param.data.id + "<br/>" + "label:" + param.data.label;
+                        }
+                    },
+                    animationDurationUpdate: 1500,
+                    animationEasingUpdate: 'quinticInOut',
+                    label: {
+                        normal: {
+                            show: true,
+                            textStyle: {
+                                fontSize: 12
+                            },
+                        }
+                    },
+                    series: [
+                        {
+                            type: 'graph',
+                            layout: 'force',
+                            symbol: 'circle',
+                            symbolSize: 45,
+                            edgeSymbolSize: [4, 10],
+                            focusNodeAdjacency: true,
+                            edgeSymbol: ['circle', 'arrow'],
+                            roam: true,
+                            label: {
+                                normal: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: 10
+                                    },
+                                    formatter: function (param) {
+                                        return param.data.label;
+                                    }
+                                }
+                            },
+                            force: {
+                                repulsion: 1000
+                            },
+                            edgeLabel: {
+                                normal: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: 10
+                                    },
+                                    formatter: function (param) {
+                                        return param.data.label;
+                                    }
+                                }
+                            },
+                            data: result.vertices,
+                            links: result.edges,
+                            lineStyle: {
+                                normal: {
+                                    type: 'solid',
+                                    opacity: 1,
+                                    width: 2,
+                                    curveness: 0
+                                }
+                            }
+                        }
+                    ]
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+
+                myChart.on('click', function (params) {
+                    var c = "key\tvalue\t <hr>";
+                    c += c_format("id", params.data.id, "") + "<hr>";
+                    c += c_format("label", params.data.label, "<hr style='color: #00FF00'>");
+                    var props = params.data.properties;
+                    for (var prop in props) {
+                        c += "<hr>" + c_format(prop, props[prop], "");
+                    }
+                    layer.closeAll();
+                    layer.open({
+                        id: params.data.id,
+                        title: false,
+                        type: 1,
+                        btn: [],
+                        shade: 0,
+                        move: '.layui-layer-content',
+                        offset: "rb",
+                        content: '<div style="padding: 5px 5px;min-width: 200px">' + c + '</div>'
+                    })
+                });
+
+            },
+            //请求失败，包含具体的错误信息
+            error: function (e) {
+                console.log(e.status);
+                console.log(e.responseText);
+            }
+        })
+    });
+
+
 </script>
 
 </body>

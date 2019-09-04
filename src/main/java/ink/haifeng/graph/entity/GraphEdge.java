@@ -1,5 +1,6 @@
 package ink.haifeng.graph.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 /**
@@ -8,7 +9,15 @@ import lombok.Data;
  */
 @Data
 public class GraphEdge extends Element {
+
+
+    @JSONField(name = "value")
+    private String label;
+
+    private String source;
+    private String target;
     private GraphVertex from;
+
     private GraphVertex to;
 
 
