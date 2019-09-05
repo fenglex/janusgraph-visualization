@@ -39,14 +39,17 @@
                     <div><textarea id="gremlin" placeholder="请输入内容" class="layui-textarea"></textarea></div>
                 </div>
                 <div class="layui-card-body pd">
-                    <div class="layui-row" >
+                    <div class="layui-row">
                         <div class="layui-col-md6">
                             <form class="layui-form layui-form-pane" action="">
                                 <div class="layui-form-item" style="margin-bottom: 0px;padding-bottom: 5px;">
-                                    <label class="layui-form-label">服务器地址:</label>
+                                    <label class="layui-form-label">地址:</label>
+                                    <div class="layui-input-inline" style="margin-right: 0px;">
+                                        <input id="host" type="text" autocomplete="off" class="layui-input">
+                                    </div>
+                                    <label class="layui-form-label">端口:</label>
                                     <div class="layui-input-inline">
-                                        <input type="text" name="username" lay-verify="required" placeholder="ws://localhost"
-                                               autocomplete="off" class="layui-input">
+                                        <input id="port" type="text" autocomplete="off" class="layui-input">
                                     </div>
                                 </div>
                             </form>
