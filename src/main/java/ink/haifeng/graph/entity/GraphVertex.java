@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class GraphVertex extends Element {
     private boolean draggable = true;
+    private int category = 0;
 
     @Override
     public boolean equals(Object o) {

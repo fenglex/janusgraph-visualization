@@ -2,13 +2,22 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>layui</title>
+    <title>Gremlin</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="layui/css/layui.css" media="all">
-    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->\
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pd {
+            padding: 3px;
+        }
+
         .layui-layer-dialog .layui-layer-content {
             line-height: 18px;
             padding: 5px;
@@ -20,18 +29,30 @@
     </style>
 </head>
 <body>
-<div style="padding: 5px; background-color: #F2F2F2;padding-bottom: 3px;">
-    <div class="layui-row layui-col-space15">
+
+<div style="padding: 3px; background-color: #F2F2F2;">
+    <div class="layui-row">
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-header">Gremlin语句</div>
-                <div class="layui-card-body">
+                <div class="layui-card-body pd">
                     <div><textarea id="gremlin" placeholder="请输入内容" class="layui-textarea"></textarea></div>
                 </div>
-                <div class="layui-card-body">
-                    <div class="layui-row " style="height: 35px;">
-                        <div class="layui-col-md1 layui-col-md-offset11">
-                            <button id="exec" type="button" class="layui-btn layui-btn-sm layui-layout-right">执行</button>
+                <div class="layui-card-body pd">
+                    <div class="layui-row" >
+                        <div class="layui-col-md6">
+                            <form class="layui-form layui-form-pane" action="">
+                                <div class="layui-form-item" style="margin-bottom: 0px;padding-bottom: 5px;">
+                                    <label class="layui-form-label">服务器地址:</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="username" lay-verify="required" placeholder="ws://localhost"
+                                               autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-col-md1 layui-col-md-offset5">
+                            <button id="exec" type="button" class="layui-btn left">执行</button>
                         </div>
                     </div>
                 </div>
@@ -39,9 +60,9 @@
         </div>
     </div>
 </div>
-<div style="padding: 5px; background-color: #F2F2F2;">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md2">
+<div style="padding: 3px; background-color: #F2F2F2;">
+    <div class="layui-row">
+        <div class="layui-col-md3" style="padding: 3px">
             <div class="layui-card">
                 <div class="layui-card-header">查询结果</div>
                 <div class="layui-card-body" id="result">
@@ -49,7 +70,7 @@
                 </div>
             </div>
         </div>
-        <div class="layui-col-md10">
+        <div class="layui-col-md9" style="padding: 3px">
             <div class="layui-card">
                 <div class="layui-card-body" id="graph">
 
@@ -57,16 +78,19 @@
             </div>
         </div>
     </div>
-
 </div>
-<div class="layui-row">
-    <div class="layui-col-md6 layui-col-md-offset1"><a href="https://github.com/fenglex/janusgraph-visualization">源码链接(https://github.com/fenglex/janusgraph-visualization)</a>
-    </div>
 
+<div class="layui-row" style="height: 30px;padding-top: 10px;">
+    <div class="layui-col-md6">
+        服务器地址
+    </div>
+    <div class="layui-col-md6">
+        使用说明
+    </div>
 </div>
 <script src="jquery-3.4.1.min.js" charset="utf-8"></script>
 <script src="layui/layui.all.js" charset="utf-8"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts.min.js" charset="utf-8"></script>
+<script src="echarts.min.js" charset="utf-8"></script>
 
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 <script>
@@ -78,21 +102,34 @@
 
     function getContentSize() {
         var wh = document.documentElement.clientHeight;
-        var eh = 350;
+        var eh = 320;
         ch = (wh - eh) + "px";
-        document.getElementById("result").style.height = ch;
-        var c = 307;
+        document.getElementById("result").style.minHeight = ch;
+        var c = 277;
         gh = (wh - c) + "px";
-        document.getElementById("graph").style.height = gh;
+        document.getElementById("graph").style.minHeight = gh;
     }
 
+    function c_table(prop) {
+        var c = "<table lay-filter=\"parse-table-demo\">\n" +
+            "  <thead>\n" +
+            "    <tr>\n" +
+            "      <th lay-data=\"{field:'Key', width:50}\">Key</th>\n" +
+            "      <th lay-data=\"{field:'Value', width:150}\">Value</th>\n" +
+            "      <th lay-data=\"{field:'Property', minWidth: 100}\">Property</th>\n" +
+            "    </tr> \n" +
+            "  </thead>"
+
+        c += "</table>";
+        return c;
+    }
 
     function c_format(key, value, property) {
         return key + "\t" + value + "\t" + property;
     }
 
     window.onload = getContentSize;
-    window.onresize = getContentSize;
+    // window.onresize = getContentSize;
     $("#exec").click(function () {
         var gremlin = $("#gremlin").val().trim();
         if (gremlin.length < 3) {
@@ -138,6 +175,13 @@
                             edgeSymbolSize: [4, 10],
                             focusNodeAdjacency: true,
                             edgeSymbol: ['circle', 'arrow'],
+                            categories: [{
+                                itemStyle: {
+                                    normal: {
+                                        color: "#009800",
+                                    }
+                                }
+                            }],
                             roam: true,
                             label: {
                                 normal: {

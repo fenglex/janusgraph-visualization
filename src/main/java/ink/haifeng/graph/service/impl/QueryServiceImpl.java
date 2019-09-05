@@ -2,7 +2,6 @@ package ink.haifeng.graph.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import ink.haifeng.graph.common.Constant;
-import ink.haifeng.graph.entity.Element;
 import ink.haifeng.graph.entity.GraphEdge;
 import ink.haifeng.graph.entity.GraphVertex;
 import ink.haifeng.graph.entity.QueryResult;
@@ -17,7 +16,6 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.xml.crypto.Data;

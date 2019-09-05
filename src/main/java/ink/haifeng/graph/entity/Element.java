@@ -3,8 +3,8 @@ package ink.haifeng.graph.entity;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author: haifeng
@@ -16,10 +16,17 @@ public class Element {
     @JSONField(name = "name")
     private String id;
     private String label;
-    private Map<String, String> properties = new HashMap<>(5);
+    private List<Property> properties = new ArrayList<>(5);
 
     public void putProperty(String key, String value) {
-        this.properties.put(key, value);
+        Property prop = new Property();
+        prop.setKey(key);
+        prop.setValue(value);
+        this.properties.add(prop);
+    }
+
+    public void putProperty(Property property) {
+        this.properties.add(property);
     }
 
 }
