@@ -9,22 +9,20 @@
     <link rel="stylesheet" href="layui/css/layui.css" media="all">
     <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
         .pd {
             padding: 3px;
         }
 
-        .layui-layer-dialog .layui-layer-content {
-            line-height: 18px;
-            padding: 5px;
+        .layui-table .layui-form {
+            margin: 0px;
         }
 
-        .layui-layer-btn {
+        .layui-layer-btn .layui-layer-iframe .layui-layer-btn- .layui-layer-page {
             padding: 0px;
+        }
+
+        .layui-table-view {
+            margin: 0px;
         }
     </style>
 </head>
@@ -44,7 +42,7 @@
                             <form class="layui-form layui-form-pane" action="">
                                 <div class="layui-form-item" style="margin-bottom: 0px;padding-bottom: 5px;">
                                     <label class="layui-form-label">地址:</label>
-                                    <div class="layui-input-inline" style="margin-right: 0px;">
+                                    <div class="layui-input-inline">
                                         <input id="host" type="text" autocomplete="off" class="layui-input">
                                     </div>
                                     <label class="layui-form-label">端口:</label>
@@ -82,6 +80,8 @@
         </div>
     </div>
 </div>
+<div class="layui-row layui-hide" id="v_data">
+</div>
 
 <div class="layui-row" style="height: 30px;padding-top: 10px;">
     <div class="layui-col-md6">
@@ -94,14 +94,10 @@
 <script src="jquery-3.4.1.min.js" charset="utf-8"></script>
 <script src="layui/layui.all.js" charset="utf-8"></script>
 <script src="echarts.min.js" charset="utf-8"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 <script>
-    layui.use(['element', 'layer'], function () {
-        var element = layui.element;
-        var layer = layui.layer;
-
-    });
 
     function getContentSize() {
         var wh = document.documentElement.clientHeight;
@@ -113,38 +109,79 @@
         document.getElementById("graph").style.minHeight = gh;
     }
 
-    function c_table(prop) {
-        var c = "<table lay-filter=\"parse-table-demo\">\n" +
-            "  <thead>\n" +
-            "    <tr>\n" +
-            "      <th lay-data=\"{field:'Key', width:50}\">Key</th>\n" +
-            "      <th lay-data=\"{field:'Value', width:150}\">Value</th>\n" +
-            "      <th lay-data=\"{field:'Property', minWidth: 100}\">Property</th>\n" +
-            "    </tr> \n" +
-            "  </thead>"
-
-        c += "</table>";
-        return c;
-    }
-
-    function c_format(key, value, property) {
-        return key + "\t" + value + "\t" + property;
-    }
-
     window.onload = getContentSize;
+
     // window.onresize = getContentSize;
+
+    layui.use(['element', 'layer'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+    });
+
+    function c_table(id, label, prop) {
+        layui.use('table', function () {
+            var table = layui.table;
+            //展示已知数据
+            table.render({
+                id: 'edata',
+                elem: '#v_table',
+                cols: [
+                    //标题栏
+                    [{
+                        field: 'key',
+                        title: 'Key',
+                        align: 'left'
+                    }, {
+                        field: 'value',
+                        title: 'Value',
+                        align: 'left'
+                    }/*, {
+                        field: 'property',
+                        title: 'Property',
+                        align: 'left'
+                    }*/]
+                ],
+                data: prop,
+                //,skin: 'line' //表格风格
+                even: false
+            });
+            table.reload('edata', {
+                data: prop
+            });
+        });
+    }
+
+    function reload_table(index, id, label, prop) {
+        //展示已知数据
+        index.reload({
+            elem: '#v_table',
+            data: prop,
+            //,skin: 'line' //表格风格
+            even: false
+        });
+    }
+
+    $("#host").val(Cookies.get('host'));
+    $("#port").val(Cookies.get('port'));
+
+
+    var index;
     $("#exec").click(function () {
         var gremlin = $("#gremlin").val().trim();
         if (gremlin.length < 3) {
             return;
         }
+        var host = $("#host").val();
+        var port = $("#port").val();
+        Cookies.set('host', host, {expires: 7});
+        Cookies.set('port', port, {expires: 7});
         $.ajax({
             type: "GET",
             contentType: "application/json;charset=UTF-8",
             //请求地址
             url: "/query",
             //数据，json字符串
-            data: {host: '127.0.0.1', port: 8182, gremlin: gremlin},
+            data: {host: host, port: port, gremlin: gremlin},
             dataType: "json",
             //请求成功
             success: function (result) {
@@ -228,24 +265,26 @@
                 myChart.setOption(option);
 
                 myChart.on('click', function (params) {
-                    var c = "key\tvalue\t <hr>";
-                    c += c_format("id", params.data.id, "") + "<hr>";
-                    c += c_format("label", params.data.label, "<hr style='color: #00FF00'>");
-                    var props = params.data.properties;
-                    for (var prop in props) {
-                        c += "<hr>" + c_format(prop, props[prop], "");
-                    }
-                    layer.closeAll();
-                    layer.open({
-                        id: params.data.id,
-                        title: false,
+                    var title = "id:" + params.data.id + ",label:" + params.data.label;
+                    layer.close(layer.index);
+                    index = layer.open({
+                        id: 'data_view',
+                        title: title,
                         type: 1,
+                        area: '300px',
                         btn: [],
-                        shade: 0,
-                        move: '.layui-layer-content',
-                        offset: "rb",
-                        content: '<div style="padding: 5px 5px;min-width: 200px">' + c + '</div>'
-                    })
+                        shade: false,
+                        anim: 1,
+                        move: '.layui-layer-title',
+                        offset: "r",
+                        resize: false,
+                        content: '<div id="tp"><table id="v_table"></table></div>',
+                        success: function () {
+                            c_table(params.data.id, params.data.label, params.data.properties);
+                        }
+                    });
+
+
                 });
 
             },
