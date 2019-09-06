@@ -38,7 +38,7 @@
                 </div>
                 <div class="layui-card-body pd">
                     <div class="layui-row">
-                        <div class="layui-col-md6">
+                        <div class="layui-col-md6 layui-col-sm6 layui-col-xs6">
                             <form class="layui-form layui-form-pane" action="">
                                 <div class="layui-form-item" style="margin-bottom: 0px;padding-bottom: 5px;">
                                     <label class="layui-form-label">地址:</label>
@@ -84,10 +84,7 @@
 </div>
 
 <div class="layui-row" style="height: 30px;padding-top: 10px;">
-    <div class="layui-col-md6">
-        服务器地址
-    </div>
-    <div class="layui-col-md6">
+    <div class="layui-col-md6 layui-col-md-offset1">
         使用说明
     </div>
 </div>
@@ -113,14 +110,17 @@
 
     // window.onresize = getContentSize;
 
-    layui.use(['element', 'layer'], function () {
-        var element = layui.element;
-        var layer = layui.layer;
-    });
+    /*    layui.use(['element', 'layer'], function () {
+            var element = layui.element;
+            var layer = layui.layer;
+        });*/
+    var table = layui.table;
 
     function c_table(id, label, prop) {
+
         layui.use('table', function () {
-            var table = layui.table;
+
+
             //展示已知数据
             table.render({
                 id: 'edata',
@@ -145,25 +145,12 @@
                 //,skin: 'line' //表格风格
                 even: false
             });
-            table.reload('edata', {
-                data: prop
-            });
         });
     }
 
-    function reload_table(index, id, label, prop) {
-        //展示已知数据
-        index.reload({
-            elem: '#v_table',
-            data: prop,
-            //,skin: 'line' //表格风格
-            even: false
-        });
-    }
 
     $("#host").val(Cookies.get('host'));
     $("#port").val(Cookies.get('port'));
-
 
     var index;
     $("#exec").click(function () {
@@ -266,9 +253,9 @@
 
                 myChart.on('click', function (params) {
                     var title = "id:" + params.data.id + ",label:" + params.data.label;
-                    layer.close(layer.index);
+                    console.log("before" + layer.index)
                     index = layer.open({
-                        id: 'data_view',
+                        id: "data_ddd",
                         title: title,
                         type: 1,
                         area: '300px',
@@ -283,8 +270,6 @@
                             c_table(params.data.id, params.data.label, params.data.properties);
                         }
                     });
-
-
                 });
 
             },

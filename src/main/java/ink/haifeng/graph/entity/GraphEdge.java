@@ -1,6 +1,7 @@
 package ink.haifeng.graph.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
@@ -16,8 +17,9 @@ public class GraphEdge extends Element {
 
     private String source;
     private String target;
+    @JsonIgnore
     private GraphVertex from;
-
+    @JsonIgnore
     private GraphVertex to;
 
 
