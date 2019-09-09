@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>ink.haifeng.graph</groupId>
 	<artifactId>janusgraph-visualization</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>janusgraph-visualization</name>
-	<description>Demo project for Spring Boot</description>
+	<description>A tool for janusgraph visualization</description>
 
 	<properties>
 		<java.version>1.8</java.version>
