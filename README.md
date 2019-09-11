@@ -10,7 +10,7 @@ How to run ?
 
 Download release jar file
 ```$xslt
-java -jar janusgraph-visualization-x.x.x.jar
+nohup java -jar janusgraph-visualization-x.x.x.jar >/dev/null 2>&1&
 ```
 
 Then browser open http://localhost:8888
