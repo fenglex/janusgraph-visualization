@@ -12,7 +12,7 @@ How to run ?
 java -jar janusgraph-visualization-x.x.x.jar
 ```
 
-Browser open http://localhost:8888
+Then browser open http://localhost:8888
 
 If you want to modify the port
 ```$xslt
