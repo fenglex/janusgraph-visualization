@@ -8,6 +8,7 @@ View janusgraph with tools.
 
 How to run ?
 
+Download release jar file
 ```$xslt
 java -jar janusgraph-visualization-x.x.x.jar
 ```
