@@ -19,7 +19,7 @@ public class QueryController {
     private QueryService queryService;
 
     @RequestMapping("/query")
-    public QueryResult search(String host, int port, String gremlin) {
+    public QueryResult query(String host, int port, String gremlin) {
         return queryService.query(host, port, gremlin);
     }
 

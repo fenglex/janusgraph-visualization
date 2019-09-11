@@ -49,7 +49,11 @@
 				</el-col>
 			</el-col>
 		</div>
+		<div>
+			<a style="padding-left: 30px;" href="https://github.com/fenglex/janusgraph-visualization">使用说明https://github.com/fenglex/janusgraph-visualization</a>
+		</div>
 	</div>
+
 </template>
 
 <script>
@@ -69,12 +73,12 @@
 			};
 		},
 		mounted: function() {
-			var wh = document.documentElement.clientHeight;
-			var eh = 277;
-			var ch = (wh - eh) + "px";
+			let wh = document.documentElement.clientHeight;
+			let eh = 247;
+			let ch = (wh - eh) + "px";
 			document.getElementById("result").style.minHeight = ch;
-			var c = 277;
-			var gh = (wh - c) + "px";
+			let c = 247;
+			let gh = (wh - c) + "px";
 			document.getElementById("graph").style.minHeight = gh;
 		},
 		methods: {
@@ -86,7 +90,6 @@
 							gremlin: this.$data.gremlin
 						}
 					}).then(res => {
-						console.log(res);
 						var result = res.data;
 						this.$data.gremlinResult = result.result.replace(/\n/g, "<br/>");
 						var myChart = this.$echarts.init(document.getElementById('graph'));
@@ -168,7 +171,6 @@
 						myChart.on('click', function(params) {
 							Notification.closeAll();
 							var title = "id:" + params.data.id + ",label:" + params.data.label;
-							console.log(params);
 							var c = "";
 							var props = params.data.properties;
 							for (var i = 0; i < props.length; i++) {

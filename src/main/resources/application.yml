@@ -1,7 +1,2 @@
 server:
   port: 8888
-
-spring:
-  mvc:
-    view:
-      prefix=classpath:/static/:

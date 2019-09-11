@@ -126,7 +126,8 @@ public class QueryServiceImpl implements QueryService {
             result.setResult(e.getMessage());
         }
         result.merge();
-        result.setResult(builder.toString());
+        String rs = builder.toString().isEmpty() ? "无结果" : builder.toString();
+        result.setResult(rs);
         return result;
     }
 }
