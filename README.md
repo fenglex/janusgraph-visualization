@@ -6,7 +6,7 @@ A simple tool for janusgraph visualization.
 
 View janusgraph with tools.
 
-How tool run ?
+How to run ?
 
 ```$xslt
 java -jar janusgraph-visualization-x.x.x.jar
