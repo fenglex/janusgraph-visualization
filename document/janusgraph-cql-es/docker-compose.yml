@@ -8,7 +8,7 @@ services:
     environment:
       - discovery.type=single-node
     volumes:
-      - $PWD/es/:/usr/share/elasticsearch/data/'
+      - $PWD/es/:/usr/share/elasticsearch/data/
     ports:
       - 9200:9200
       - 9300:9300
@@ -17,18 +17,18 @@ services:
         ipv4_address: 192.168.12.10
   cassandra:
     image: cassandra:3.11.0
-    container_name: "cassandra"
-    hostname: "cassandra"
+    container_name: cassandra
+    hostname: cassandra
     ports:
-      - "7000:7000"
-      - "7199:7199"
-      - "9042:9042"
+      - 7000:7000
+      - 7199:7199
+      - 9042:9042
     networks:
       graph:
         ipv4_address: 192.168.12.11
     tty: true
     volumes:
-      - '$PWD//cassandra/:/var/lib/cassandra/'
+      - $PWD/cassandra/:/var/lib/cassandra/
   janusgraph:
     container_name: janusgraph
     image: janusgraph/janusgraph:0.4.0
@@ -38,8 +38,8 @@ services:
       graph:
         ipv4_address: 192.168.12.12
     volumes:
-      - "./janusgraph.properties:/etc/opt/janusgraph/janusgraph.properties:ro"
-      - "./gremlin-server.yaml:/etc/opt/janusgraph/gremlin-server.yaml:ro"
+      - ./janusgraph.properties:/etc/opt/janusgraph/janusgraph.properties:ro
+      - ./gremlin-server.yaml:/etc/opt/janusgraph/gremlin-server.yaml:ro
 networks:
   graph:
     driver: bridge
