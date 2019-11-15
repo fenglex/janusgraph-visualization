@@ -80,6 +80,7 @@ public class QueryServiceImpl implements QueryService {
         QueryResult result = new QueryResult();
         StringBuilder builder = new StringBuilder();
         Iterator<Result> iterator = set.iterator();
+        String errorMessage = null;
         try {
             while (iterator.hasNext()) {
                 Result next = iterator.next();
@@ -126,11 +127,16 @@ public class QueryServiceImpl implements QueryService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            result.setResult(e.getMessage());
+            errorMessage = e.getMessage();
         }
         result.merge();
-        String rs = builder.toString().isEmpty() ? "无结果" : builder.toString();
-        result.setResult(rs);
+        if (errorMessage == null) {
+            String rs = builder.toString().isEmpty() ? "无结果" : builder.toString();
+            result.setResult(rs);
+        } else {
+            result.setResult(errorMessage);
+        }
+
         return result;
     }
 }
