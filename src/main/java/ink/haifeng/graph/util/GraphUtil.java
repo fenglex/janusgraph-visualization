@@ -55,8 +55,8 @@ public class GraphUtil {
         Vertex outVertex = edge.outVertex();
         GraphVertex inGraphVertex = convert(inVertex);
         GraphVertex outGraphVertex = convert(outVertex);
-        graphEdge.setFrom(outGraphVertex);
-        graphEdge.setTo(inGraphVertex);
+        graphEdge.setSource(outGraphVertex);
+        graphEdge.setTarget(inGraphVertex);
         return graphEdge;
     }
 

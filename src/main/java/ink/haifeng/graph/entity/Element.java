@@ -13,7 +13,6 @@ import java.util.List;
 
 @Data
 public class Element {
-    @JSONField(name = "name")
     private String id;
     private String label;
     private List<Property> properties = new ArrayList<>(5);

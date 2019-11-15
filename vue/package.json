@@ -13,6 +13,7 @@
     "echarts": "^4.2.1",
     "element-ui": "^2.12.0",
     "qs": "^6.8.0",
+    "vis-network": "^6.4.0",
     "vue": "^2.6.10"
   },
   "devDependencies": {

@@ -1,6 +1,5 @@
 package ink.haifeng.graph.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -26,8 +25,8 @@ public class QueryResult {
     public void merge() {
         for (Element edge : edges) {
             GraphEdge e = (GraphEdge) edge;
-            this.vertices.add(e.getFrom());
-            this.vertices.add(e.getTo());
+            this.vertices.add(e.getSource());
+            this.vertices.add(e.getTarget());
         }
     }
 }

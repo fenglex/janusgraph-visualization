@@ -11,16 +11,14 @@ import lombok.Data;
 @Data
 public class GraphEdge extends Element {
 
+    private String from;
 
-    @JSONField(name = "value")
-    private String label;
+    private String to;
 
-    private String source;
-    private String target;
-    @JsonIgnore
-    private GraphVertex from;
-    @JsonIgnore
-    private GraphVertex to;
+
+    private GraphVertex source;
+
+    private GraphVertex target;
 
 
     @Override

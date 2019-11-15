@@ -12,8 +12,8 @@ import org.janusgraph.example.GraphOfTheGodsFactory;
 
 public class LoadData {
     public static void main(String[] args) {
-        JanusGraph graph = JanusGraphFactory.open("/Users/sundays/dev/github/janusgraph-visualization/src/main/resources/janusgraph" +
-                ".properties");
+        String path="D:\\env\\code\\janusgraph-visualization\\src\\main\\resources\\janusgraph.properties";
+        JanusGraph graph = JanusGraphFactory.open(path);
         GraphTraversalSource g = graph.traversal();
         g.V().drop().iterate();
         g.tx().commit();

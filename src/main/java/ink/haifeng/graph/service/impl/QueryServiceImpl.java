@@ -8,6 +8,7 @@ import ink.haifeng.graph.entity.GraphVertex;
 import ink.haifeng.graph.entity.QueryResult;
 import ink.haifeng.graph.service.QueryService;
 import ink.haifeng.graph.util.GraphUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Result;
 import org.apache.tinkerpop.gremlin.driver.ResultSet;
@@ -30,6 +31,7 @@ import java.util.Map;
  * @Date: 2019-08-30 16:49
  */
 @Service
+@Slf4j
 public class QueryServiceImpl implements QueryService {
 
 
@@ -57,11 +59,11 @@ public class QueryServiceImpl implements QueryService {
             Edge edge = next.getEdge();
             GraphEdge graphEdge = GraphUtil.convert(edge);
             GraphVertex graphVertex = queryVertex(client, edge.inVertex().id().toString());
-            graphEdge.setTarget(graphVertex.getId());
-            graphEdge.setTo(graphVertex);
+            graphEdge.setTo(graphVertex.getId());
+            graphEdge.setTarget(graphVertex);
             GraphVertex outGraphVertex = queryVertex(client, edge.outVertex().id().toString());
-            graphEdge.setFrom(outGraphVertex);
-            graphEdge.setSource(outGraphVertex.getId());
+            graphEdge.setSource(outGraphVertex);
+            graphEdge.setFrom(outGraphVertex.getId());
             return graphEdge;
         }
         return null;
@@ -69,6 +71,7 @@ public class QueryServiceImpl implements QueryService {
 
     @Override
     public QueryResult query(String host, int port, String gremlin) {
+        log.info("query:{}", gremlin);
         Client client = clusterCache.get(host, port);
         if (client == null) {
             client = clusterCache.put(host, port);
