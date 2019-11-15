@@ -34,7 +34,7 @@
 			<el-col>
 				<el-col :span="6">
 					<el-card class="box-card" id="result">
-						<div slot="header" class="clearfix" >
+						<div slot="header" class="clearfix">
 							<span>查询结果</span>
 						</div>
 						<div class="text item" v-html="gremlinResult" id="result-data">
@@ -83,6 +83,9 @@
 		},
 		methods: {
 			query: function() {
+				if (this.$data.gremlin.length < 3) {
+					return;
+				}
 				axios.get('/query', {
 						params: {
 							host: this.$data.host,
@@ -172,10 +175,12 @@
 	.prop-box {
 		min-width: 150px;
 	}
-	.el-card__header{
+
+	.el-card__header {
 		padding: 5px 10px;
 	}
-	#result-data{
+
+	#result-data {
 		font-size: 12px;
 	}
 </style>
