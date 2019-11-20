@@ -3,6 +3,7 @@ package ink.haifeng.graph.service.impl;
 import cn.hutool.core.date.DateUtil;
 import ink.haifeng.graph.common.Constant;
 import ink.haifeng.graph.component.ClusterCache;
+import ink.haifeng.graph.entity.Element;
 import ink.haifeng.graph.entity.GraphEdge;
 import ink.haifeng.graph.entity.GraphVertex;
 import ink.haifeng.graph.entity.QueryResult;
@@ -20,7 +21,6 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,44 +38,19 @@ public class QueryServiceImpl implements QueryService {
     @Autowired
     private ClusterCache clusterCache;
 
-    private GraphVertex queryVertex(Client client, String id) {
-        String gremlin = String.format("g.V('%s')", id);
-        ResultSet set = client.submit(gremlin);
-        Iterator<Result> iterator = set.iterator();
-        while (iterator.hasNext()) {
-            Result next = iterator.next();
-            Vertex vertex = next.getVertex();
-            return GraphUtil.convert(vertex);
-        }
-        return null;
-    }
 
-    private GraphEdge queryEdge(Client client, String id) {
-        String gremlin = String.format("g.E('%s')", id);
-        ResultSet set = client.submit(gremlin);
-        Iterator<Result> iterator = set.iterator();
-        while (iterator.hasNext()) {
-            Result next = iterator.next();
-            Edge edge = next.getEdge();
-            GraphEdge graphEdge = GraphUtil.convert(edge);
-            GraphVertex graphVertex = queryVertex(client, edge.inVertex().id().toString());
-            graphEdge.setTo(graphVertex.getId());
-            graphEdge.setTarget(graphVertex);
-            GraphVertex outGraphVertex = queryVertex(client, edge.outVertex().id().toString());
-            graphEdge.setSource(outGraphVertex);
-            graphEdge.setFrom(outGraphVertex.getId());
-            return graphEdge;
-        }
-        return null;
-    }
-
-    @Override
-    public QueryResult query(String host, int port, String gremlin) {
-        log.info("query:{}", gremlin);
+    private Client getClient(String host, int port) {
         Client client = clusterCache.get(host, port);
         if (client == null) {
             client = clusterCache.put(host, port);
         }
+        return client;
+    }
+
+    @Override
+    public QueryResult query(String host, int port, String gremlin, String sourceName) {
+        log.info("query:{}", gremlin);
+        Client client = getClient(host, port);
         ResultSet set = client.submit(gremlin);
         QueryResult result = new QueryResult();
         StringBuilder builder = new StringBuilder();
@@ -88,16 +63,17 @@ public class QueryServiceImpl implements QueryService {
                 Object obj = next.getObject();
                 if (obj instanceof Vertex) {
                     Vertex vertex = next.getVertex();
-                    result.getVertices().add(GraphUtil.convert(vertex));
+                    GraphVertex graphVertex = convert(vertex);
+                    result.getVertices().add(graphVertex);
                 } else if (obj instanceof Edge) {
                     Edge edge = next.getEdge();
-                    GraphEdge graphEdge = queryEdge(client, edge.id().toString());
+                    GraphEdge graphEdge = convert(edge);
                     result.getEdges().add(graphEdge);
                 } else if (obj instanceof VertexProperty) {
                     VertexProperty<Object> property = next.getVertexProperty();
                     Map<String, String> map = new HashMap<>(1);
                     Object value = property.value();
-                    map.put(property.key(), value instanceof Data ? DateUtil.formatDateTime((Date) value) : value.toString());
+                    map.put(property.key(), value instanceof Date ? DateUtil.formatDateTime((Date) value) : value.toString());
                     result.getProperties().putAll(map);
                 } else if (obj instanceof Property) {
                     Property<Object> property = next.getProperty();
@@ -115,11 +91,11 @@ public class QueryServiceImpl implements QueryService {
                     for (Object next1 : path) {
                         if (next1 instanceof Vertex) {
                             Vertex vertex = (Vertex) next1;
-                            GraphVertex graphVertex = queryVertex(client, vertex.id().toString());
+                            GraphVertex graphVertex = convert(vertex);
                             result.getVertices().add(graphVertex);
                         } else {
                             Edge edge = (Edge) next1;
-                            GraphEdge graphEdge = queryEdge(client, edge.id().toString());
+                            GraphEdge graphEdge = convert(edge);
                             result.getEdges().add(graphEdge);
                         }
                     }
@@ -136,7 +112,56 @@ public class QueryServiceImpl implements QueryService {
         } else {
             result.setResult(errorMessage);
         }
-
         return result;
     }
+
+
+    @Override
+    public Element getElement(String host, int port, String sourceName, String id, boolean isVertex) {
+        String gremlin = isVertex ? String.format("%s.V(%s)", sourceName, id) : String.format("%s.E(%s)", sourceName, id);
+        Client client = getClient(host, port);
+        log.info("query gremlin:{}", gremlin);
+        ResultSet set = client.submit(gremlin);
+        Iterator<Result> iterator = set.iterator();
+        if (iterator.hasNext()) {
+            if (isVertex) {
+                Result next = iterator.next();
+                Vertex vertex = next.getVertex();
+                return GraphUtil.convert(vertex);
+            } else {
+                Result next = iterator.next();
+                Edge edge = next.getEdge();
+                return GraphUtil.convert(edge);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private GraphEdge convert(Edge edge) {
+        GraphEdge graphEdge = new GraphEdge();
+        graphEdge.setId(edge.id().toString());
+        graphEdge.setLabel(edge.label());
+        graphEdge.setFrom(edge.inVertex().id().toString());
+        graphEdge.setTo(edge.outVertex().id().toString());
+
+        GraphVertex inVertex = new GraphVertex();
+        inVertex.setId(edge.inVertex().id().toString());
+        inVertex.setLabel(edge.inVertex().label());
+        graphEdge.setTarget(inVertex);
+
+        GraphVertex outVertex = new GraphVertex();
+        outVertex.setId(edge.outVertex().id().toString());
+        outVertex.setLabel(edge.outVertex().id().toString());
+        graphEdge.setSource(outVertex);
+        return graphEdge;
+    }
+
+    private GraphVertex convert(Vertex vertex) {
+        GraphVertex graphVertex = new GraphVertex();
+        graphVertex.setId(vertex.id().toString());
+        graphVertex.setLabel(vertex.label());
+        return graphVertex;
+    }
+
 }

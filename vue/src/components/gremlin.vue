@@ -7,21 +7,28 @@
 				</div>
 				<el-row>
 					<div>
-						<el-col :span="4">
+						<el-col :span="3">
 							<div>
 								<el-input v-model="host" size="small">
 									<template slot="prepend">地址</template>
 								</el-input>
 							</div>
 						</el-col>
-						<el-col :span="4">
+						<el-col :span="3">
 							<div>
 								<el-input v-model="port" size="small">
 									<template slot="prepend">端口</template>
 								</el-input>
 							</div>
 						</el-col>
-						<el-col :span="1" :offset="14">
+						<el-col :span="3">
+							<div>
+								<el-input v-model="sourceName" size="small">
+									<template slot="prepend">SourceName</template>
+								</el-input>
+							</div>
+						</el-col>
+						<el-col :span="1" :offset="13">
 							<div>
 								<el-button size="small" style="margin-top: 5px;" v-on:click="query" type="primary">执行</el-button>
 							</div>
@@ -68,6 +75,7 @@
 				name: 'haifeng',
 				host: 'localhost',
 				port: '8182',
+				sourceName: 'g',
 				gremlin: '',
 				gremlinResult: ''
 			};
@@ -86,13 +94,15 @@
 				if (this.$data.gremlin.length < 3) {
 					return;
 				}
-				axios.get('/query', {
-						params: {
+				axios({
+					url: 'http://localhost:8888/query',
+					params:  {
 							host: this.$data.host,
 							port: this.$data.port,
-							gremlin: this.$data.gremlin
+							gremlin: this.$data.gremlin,
+							sourceName: this.$data.sourceName
 						}
-					}).then(res => {
+				}).then(res => {
 						var result = res.data;
 						this.$data.gremlinResult = result.result.replace(/\n/g, "<br/>");
 						console.info(result);

@@ -1,5 +1,8 @@
 package ink.haifeng.graph.service;
 
+import ink.haifeng.graph.entity.Element;
+import ink.haifeng.graph.entity.GraphEdge;
+import ink.haifeng.graph.entity.GraphVertex;
 import ink.haifeng.graph.entity.QueryResult;
 
 /**
@@ -9,5 +12,8 @@ import ink.haifeng.graph.entity.QueryResult;
 public interface QueryService {
 
 
-    QueryResult query(String host,int port,String gremlin);
+    QueryResult query(String host, int port, String gremlin, String sourceName);
+
+    Element getElement(String host, int port, String sourceName, String id, boolean vertex);
+
 }
