@@ -1,8 +1,7 @@
 package com.fenglex.janus.controller;
 
-import com.fenglex.janus.entity.GraphEdge;
-import com.fenglex.janus.entity.GraphVertex;
 import com.fenglex.janus.entity.QueryResult;
+import com.fenglex.janus.entity.vo.PropertyVo;
 import com.fenglex.janus.service.QueryService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +27,13 @@ public class QueryController {
     }
 
     @RequestMapping("/vertex")
-    public GraphVertex queryVertex(String host, int port, String sourceName, String id) {
-        return (GraphVertex) queryService.getElement(host, port, sourceName, id, true);
+    public PropertyVo queryVertex(String host, int port, String sourceName, String id) {
+        return queryService.getValueMap(host, port, sourceName, id, true);
     }
 
     @RequestMapping("/edge")
-    public GraphEdge queryEdge(String host, int port, String sourceName, String id) {
-        return (GraphEdge) queryService.getElement(host, port, sourceName, id, false);
+    public PropertyVo queryEdge(String host, int port, String sourceName, String id) {
+        return queryService.getValueMap(host, port, sourceName, id, false);
     }
 
 

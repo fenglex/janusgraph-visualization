@@ -1,13 +1,11 @@
 package com.fenglex.janus.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.fenglex.janus.common.Constant;
 import com.fenglex.janus.component.ClusterCache;
-import com.fenglex.janus.entity.Element;
-import com.fenglex.janus.entity.GraphEdge;
-import com.fenglex.janus.entity.GraphVertex;
-import com.fenglex.janus.entity.QueryResult;
+import com.fenglex.janus.entity.*;
+import com.fenglex.janus.entity.vo.PropertyVo;
 import com.fenglex.janus.service.QueryService;
-import com.fenglex.janus.util.GraphUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Result;
@@ -18,7 +16,10 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * @Author: haifeng
@@ -61,7 +62,7 @@ public class QueryServiceImpl implements QueryService {
                     Edge edge = next.getEdge();
                     GraphEdge graphEdge = convert(edge);
                     result.getEdges().add(graphEdge);
-                } else if(obj instanceof  Path){
+                } else if (obj instanceof Path) {
                     Path path = next.getPath();
                     for (Object next1 : path) {
                         if (next1 instanceof Vertex) {
@@ -92,22 +93,33 @@ public class QueryServiceImpl implements QueryService {
 
 
     @Override
-    public Element getElement(String host, int port, String sourceName, String id, boolean isVertex) {
+    public PropertyVo getValueMap(String host, int port, String sourceName, String id, boolean isVertex) {
         String gremlin = isVertex ? String.format("%s.V(%s).valueMap()", sourceName, id) : String.format("%s.E(%s).valueMap()", sourceName, id);
         Client client = getClient(host, port);
         log.info("query gremlin:{}", gremlin);
         ResultSet set = client.submit(gremlin);
         Iterator<Result> iterator = set.iterator();
         if (iterator.hasNext()) {
-            if (isVertex) {
-                Result next = iterator.next();
-                Vertex vertex = next.getVertex();
-                return GraphUtil.convert(vertex);
-            } else {
-                Result next = iterator.next();
-                Edge edge = next.getEdge();
-                return GraphUtil.convert(edge);
+            Element element = new Element();
+            Result next = iterator.next();
+            Object object = next.getObject();
+            LinkedHashMap<String, List> list = (LinkedHashMap<String, List>) object;
+            for (String key : list.keySet()) {
+                GraphProperty graphProperty = new GraphProperty();
+                graphProperty.setKey(key);
+                List values = list.get(key);
+                for (Object value : values) {
+                    if (value instanceof Date) {
+                        graphProperty.addValue(DateUtil.formatDateTime((Date) value));
+                    } else {
+                        graphProperty.addValue(value.toString());
+                    }
+                }
+                element.putProperty(graphProperty);
             }
+            PropertyVo propertyVo = new PropertyVo(element);
+            propertyVo.setVertex(isVertex);
+            return propertyVo;
         } else {
             return null;
         }

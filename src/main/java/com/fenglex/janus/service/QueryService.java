@@ -2,6 +2,7 @@ package com.fenglex.janus.service;
 
 import com.fenglex.janus.entity.Element;
 import com.fenglex.janus.entity.QueryResult;
+import com.fenglex.janus.entity.vo.PropertyVo;
 
 /**
  * @Author: haifeng
@@ -12,6 +13,6 @@ public interface QueryService {
 
     QueryResult query(String host, int port, String gremlin, String sourceName);
 
-    Element getElement(String host, int port, String sourceName, String id, boolean vertex);
+    PropertyVo getValueMap(String host, int port, String sourceName, String id, boolean vertex);
 
 }

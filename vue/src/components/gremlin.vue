@@ -7,28 +7,28 @@
 				</div>
 				<el-row>
 					<div>
-						<el-col :span="3">
+						<el-col :span="4">
 							<div>
 								<el-input v-model="host" size="small">
 									<template slot="prepend">地址</template>
 								</el-input>
 							</div>
 						</el-col>
-						<el-col :span="3">
+						<el-col :span="4">
 							<div>
 								<el-input v-model="port" size="small">
 									<template slot="prepend">端口</template>
 								</el-input>
 							</div>
 						</el-col>
-						<el-col :span="3">
+						<el-col :span="4">
 							<div>
 								<el-input v-model="sourceName" size="small">
 									<template slot="prepend">SourceName</template>
 								</el-input>
 							</div>
 						</el-col>
-						<el-col :span="1" :offset="13">
+						<el-col :span="1" :offset="10">
 							<div>
 								<el-button size="small" style="margin-top: 5px;" v-on:click="query" type="primary">执行</el-button>
 							</div>
@@ -73,8 +73,8 @@
 		data: function() {
 			return {
 				name: 'haifeng',
-				host: 'localhost',
-				port: '8182',
+				host: '219.143.244.230',
+				port: '8882',
 				sourceName: 'g',
 				gremlin: '',
 				gremlinResult: ''
@@ -95,18 +95,18 @@
 					return;
 				}
 				axios({
-					url: 'http://localhost:8888/query',
-					params:  {
+						url: this.$base_url + '/query',
+						params: {
 							host: this.$data.host,
 							port: this.$data.port,
 							gremlin: this.$data.gremlin,
 							sourceName: this.$data.sourceName
 						}
-				}).then(res => {
+					}).then(res => {
 						var result = res.data;
 						this.$data.gremlinResult = result.result.replace(/\n/g, "<br/>");
-						console.info(result);
 						// create a network
+						var _this = this;
 						var container = document.getElementById('graph');
 						var nodes = new vis.DataSet(result.vertices);
 						var edges = new vis.DataSet(result.edges);
@@ -136,41 +136,61 @@
 							var nid = params.nodes[0];
 							Notification.closeAll();
 							var node = nodes._data.get(nid);
-							console.info(node)
-							var title = "id:" + node.id + ",\nlabel:" + node.label;
-							var c = "";
-							var props = node.properties;
-							for (var i = 0; i < props.length; i++) {
-								c += props[i].key + ":" + props[i].value + "<br/>";
-							}
-							Notification({
-								title: title,
-								message: c,
-								dangerouslyUseHTMLString: true,
-								duration: 500000,
-								customClass: 'prop-box',
-								position: 'bottom-right'
-							});
+							var title = "id:" + node.id + ",\tlabel:" + node.label;
+							axios({
+								url: _this.$base_url + '/vertex',
+								params: {
+									host: _this.$data.host,
+									port: _this.$data.port,
+									id: nid,
+									sourceName: _this.$data.sourceName
+								}
+							}).then(res => {
+								var result = res.data;
+								var c = "";
+								var values = result.keyValues;
+								for (var i = 0; i < values.length; i++) {
+									c += values[i].key + ":&emsp;" + values[i].value + "<br/>";
+								}
+								Notification({
+									title: title,
+									message: c,
+									dangerouslyUseHTMLString: true,
+									duration: 60000,
+									customClass: 'prop-box',
+									position: 'bottom-right'
+								});
+							}).catch(function() {});
 						});
 						network.on("selectEdge", function(params) {
 							var eid = params.edges[0];
 							Notification.closeAll();
 							var edge = edges._data.get(eid);
-							console.info(edge);
-							var title = "id:" + edge.id + ",\nlabel:" + edge.label;
-							var c = "";
-							var props = edge.properties;
-							for (var i = 0; i < props.length; i++) {
-								c += props[i].key + ":" + props[i].value + "<br/>";
-							}
-							Notification({
-								title: title,
-								message: c,
-								dangerouslyUseHTMLString: true,
-								duration: 500000,
-								customClass: 'prop-box',
-								position: 'bottom-right'
-							});
+							var title = "id:" + edge.id + ",\tlabel:" + edge.label;
+							axios({
+								url: _this.$base_url + '/edge',
+								params: {
+									host: _this.$data.host,
+									port: _this.$data.port,
+									id: eid,
+									sourceName: _this.$data.sourceName
+								}
+							}).then(res => {
+								var result = res.data;
+								var c = "";
+								var values = result.keyValues;
+								for (var i = 0; i < values.length; i++) {
+									c += values[i].key + ":&emsp;" + values[i].value + "<br/>";
+								}
+								Notification({
+									title: title,
+									message: c,
+									dangerouslyUseHTMLString: true,
+									duration: 60000,
+									customClass: 'prop-box',
+									position: 'bottom-right'
+								});
+							}).catch(function() {});
 						});
 					})
 					.catch(function() {

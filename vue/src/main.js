@@ -11,7 +11,7 @@ Vue.config.productionTip = false
 
 import axios from 'axios'
 Vue.prototype.$axios = axios
-
+Vue.prototype.$base_url=''
 new Vue({
   el: '#app',
   render: h => h(App),
