@@ -1,8 +1,6 @@
 package ink.haifeng.graph.service;
 
 import ink.haifeng.graph.entity.Element;
-import ink.haifeng.graph.entity.GraphEdge;
-import ink.haifeng.graph.entity.GraphVertex;
 import ink.haifeng.graph.entity.QueryResult;
 
 /**
