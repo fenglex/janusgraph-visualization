@@ -9,9 +9,6 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
  */
 @Data
 public class Property {
-    private String type;
-    private VertexProperty.Cardinality cardinality;
     private String key;
     private String value;
-    private String property;
 }

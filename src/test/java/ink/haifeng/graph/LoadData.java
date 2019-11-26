@@ -1,9 +1,13 @@
 package ink.haifeng.graph;
 
+import cn.hutool.core.io.resource.ClassPathResource;
+import cn.hutool.core.io.resource.ResourceUtil;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.example.GraphOfTheGodsFactory;
+
+import java.net.URL;
 
 /**
  * @Author: haifeng
@@ -12,7 +16,8 @@ import org.janusgraph.example.GraphOfTheGodsFactory;
 
 public class LoadData {
     public static void main(String[] args) {
-        String path="D:\\env\\code\\janusgraph-visualization\\src\\main\\resources\\janusgraph.properties";
+        ClassPathResource classPathResource = new ClassPathResource("janusgraph.properties");
+        String path = classPathResource.getPath();
         JanusGraph graph = JanusGraphFactory.open(path);
         GraphTraversalSource g = graph.traversal();
         g.V().drop().iterate();
