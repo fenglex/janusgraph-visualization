@@ -21,7 +21,14 @@ public class PropertyUtil {
         Object value = property.value();
         if (value instanceof Set) {
             List list = (List) value;
-
+            for (Object o : list) {
+                if (o instanceof Date) {
+                    String dateTime = DateUtil.formatDateTime((Date) o);
+                    graphProperty.addValue(dateTime);
+                } else {
+                    graphProperty.addValue(o.toString());
+                }
+            }
         } else if (value instanceof List) {
             Set set = (Set) value;
             for (Object o : set) {
