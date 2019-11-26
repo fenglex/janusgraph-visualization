@@ -73,8 +73,8 @@
 		data: function() {
 			return {
 				name: 'haifeng',
-				host: '219.143.244.230',
-				port: '8882',
+				host: 'localhost',
+				port: '8182',
 				sourceName: 'g',
 				gremlin: '',
 				gremlinResult: ''
@@ -94,6 +94,7 @@
 				if (this.$data.gremlin.length < 3) {
 					return;
 				}
+				this.$data.gremlinResult = "";
 				axios({
 						url: this.$base_url + '/query',
 						params: {

@@ -16,10 +16,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author: haifeng
@@ -94,7 +91,7 @@ public class QueryServiceImpl implements QueryService {
 
     @Override
     public PropertyVo getValueMap(String host, int port, String sourceName, String id, boolean isVertex) {
-        String gremlin = isVertex ? String.format("%s.V(%s).valueMap()", sourceName, id) : String.format("%s.E(%s).valueMap()", sourceName, id);
+        String gremlin = isVertex ? String.format("%s.V('%s').valueMap()", sourceName, id) : String.format("%s.E('%s').valueMap()", sourceName, id);
         Client client = getClient(host, port);
         log.info("query gremlin:{}", gremlin);
         ResultSet set = client.submit(gremlin);
@@ -103,19 +100,37 @@ public class QueryServiceImpl implements QueryService {
             Element element = new Element();
             Result next = iterator.next();
             Object object = next.getObject();
-            LinkedHashMap<String, List> list = (LinkedHashMap<String, List>) object;
+            LinkedHashMap<String, Object> list = (LinkedHashMap<String, Object>) object;
             for (String key : list.keySet()) {
                 GraphProperty graphProperty = new GraphProperty();
                 graphProperty.setKey(key);
-                List values = list.get(key);
-                for (Object value : values) {
-                    if (value instanceof Date) {
-                        graphProperty.addValue(DateUtil.formatDateTime((Date) value));
-                    } else {
-                        graphProperty.addValue(value.toString());
+                Object values = list.get(key);
+                if (values instanceof List) {
+                    for (Object value : (List) values) {
+                        if (value instanceof Date) {
+                            graphProperty.addValue(DateUtil.formatDateTime((Date) value));
+                        } else {
+                            graphProperty.addValue(value.toString());
+                        }
                     }
+                    element.putProperty(graphProperty);
+                } else if (values instanceof Set) {
+                    for (Object value : (Set) values) {
+                        if (value instanceof Date) {
+                            graphProperty.addValue(DateUtil.formatDateTime((Date) value));
+                        } else {
+                            graphProperty.addValue(value.toString());
+                        }
+                    }
+                    element.putProperty(graphProperty);
+                } else {
+                    if (values instanceof Date) {
+                        graphProperty.addValue(DateUtil.formatDateTime((Date) values));
+                    } else {
+                        graphProperty.addValue(values.toString());
+                    }
+                    element.putProperty(graphProperty);
                 }
-                element.putProperty(graphProperty);
             }
             PropertyVo propertyVo = new PropertyVo(element);
             propertyVo.setVertex(isVertex);
@@ -129,18 +144,24 @@ public class QueryServiceImpl implements QueryService {
         GraphEdge graphEdge = new GraphEdge();
         graphEdge.setId(edge.id().toString());
         graphEdge.setLabel(edge.label());
-        graphEdge.setFrom(edge.inVertex().id().toString());
-        graphEdge.setTo(edge.outVertex().id().toString());
 
-        GraphVertex inVertex = new GraphVertex();
-        inVertex.setId(edge.inVertex().id().toString());
-        inVertex.setLabel(edge.inVertex().label());
-        graphEdge.setTarget(inVertex);
+        Vertex inVertex = edge.inVertex();
+        Vertex outVertex = edge.outVertex();
 
-        GraphVertex outVertex = new GraphVertex();
-        outVertex.setId(edge.outVertex().id().toString());
-        outVertex.setLabel(edge.outVertex().id().toString());
-        graphEdge.setSource(outVertex);
+        graphEdge.setFrom(outVertex.id().toString());
+        graphEdge.setTo(inVertex.id().toString());
+
+        GraphVertex intGraphVertex = new GraphVertex();
+        intGraphVertex.setId(inVertex.id().toString());
+        intGraphVertex.setLabel(inVertex.label());
+
+        GraphVertex outGraphVertex = new GraphVertex();
+        outGraphVertex.setId(outVertex.id().toString());
+        outGraphVertex.setLabel(outVertex.id().toString());
+
+        graphEdge.setSource(convert(outVertex));
+        graphEdge.setTarget(convert(inVertex));
+
         return graphEdge;
     }
 
