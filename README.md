@@ -15,7 +15,7 @@ nohup java -jar janusgraph-visualization-x.x.x.jar >/dev/null 2>&1&
 
 Then browser open http://localhost:8888
 
-If you want to modify the port
+If you want to modify port
 ```$xslt
 java -jar janusgraph-visualization-x.x.x.jar --server.port=80
 ```
