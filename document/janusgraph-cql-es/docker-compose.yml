@@ -1,14 +1,14 @@
-version: '2'
+version: '2.2'
 services:
   es:
     image: elasticsearch:6.8.1
     container_name: es
     hostname: es
-    restart: always
     environment:
       - discovery.type=single-node
+      - TAKE_FILE_OWNERSHIP=true
     volumes:
-      - $PWD/es/:/usr/share/elasticsearch/data/
+      - ./es:/usr/share/elasticsearch/data/
     ports:
       - 9200:9200
       - 9300:9300
@@ -23,17 +23,20 @@ services:
       - 7000:7000
       - 7199:7199
       - 9042:9042
+    depends_on:
+      - es
     networks:
       graph:
         ipv4_address: 192.168.12.11
-    tty: true
     volumes:
-      - $PWD/cassandra/:/var/lib/cassandra/
+      - ./cassandra:/var/lib/cassandra/
   janusgraph:
     container_name: janusgraph
     image: janusgraph/janusgraph:0.4.0
     ports:
       - 8182:8182
+    depends_on:
+      - cassandra
     networks:
       graph:
         ipv4_address: 192.168.12.12
