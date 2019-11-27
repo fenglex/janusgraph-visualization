@@ -2,12 +2,12 @@ FROM openjdk:8-jre-alpine
 
 WORKDIR /app
 
-ARG JAR_FILE=target/janusgraph-visualization-0.1.0.jar
+ARG JAR_FILE=target/janusgraph-visualization.jar
 ARG TIME_ZONE=Asia/Shanghai
 
 ENV TZ=${TIME_ZONE}
-ENV JAVA_OPTS="-Xms128m -Xmx512dockerm"
+ENV JAVA_OPTS="-Xms128m -Xmx512m"
 
-COPY ${JAR_FILE} app.jar
+COPY ${JAR_FILE} janusgraph-visualization.jar
 EXPOSE 8888
-ENTRYPOINT java ${JAVA_OPTS} -jar app.jar
+ENTRYPOINT java ${JAVA_OPTS} -jar janusgraph-visualization.jar

@@ -8,7 +8,7 @@
 		<version>2.1.7.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>ink.haifeng.graph</groupId>
+	<groupId>com.fenglex.graph</groupId>
 	<artifactId>janusgraph-visualization</artifactId>
 	<version>0.2.0</version>
 	<name>janusgraph-visualization</name>
@@ -82,6 +82,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>janusgraph-visualization</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
