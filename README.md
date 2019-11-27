@@ -2,7 +2,7 @@
 
 A simple tool for janusgraph visualization.
 
-![Alt text](img/FireShot.png)
+![Alt text](img/0-2.jpg)
 
 View janusgraph with tools.
 
