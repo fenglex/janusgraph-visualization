@@ -1,2 +1,13 @@
 server:
   port: 8888
+
+logging:
+  #file 指定输出文件的存储路径
+  file:
+    max-size: 10MB
+    max-history: 30
+  #pattern 指定输出场景的日志输出格式
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  path: logs/
