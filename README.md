@@ -1,5 +1,5 @@
 # janusgraph-visualization
-A simple tool for janusgraph visualization.
+A simple tool for janusgraph visualization.  
 (一个简单的janusgraph查询可视化工具)
 
 ![Alt text](img/0-2.jpg)
