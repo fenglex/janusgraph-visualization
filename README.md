@@ -21,8 +21,8 @@ java -jar janusgraph-visualization-x.x.x.jar --server.port=80
 ```
 Run with docker 
 ```aidl
-docker pull fenglex/janusgrpah-visualization
-docker run -itd -p 80:8888 fenglex/janusgrpah-visualization
+docker pull fenglex/janusgraph-visualization
+docker run -itd -p 80:8888 fenglex/janusgraph-visualization
 ```
 Then browser open http://localhost:80
 
