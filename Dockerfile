@@ -1,5 +1,5 @@
 FROM openjdk:8-jre-alpine
-
+MAINTAINER fenglex@126.com
 WORKDIR /app
 
 ARG JAR_FILE=target/janusgraph-visualization.jar
