@@ -27,6 +27,6 @@ docker run -itd -p 80:8888 fenglex/janusgraph-visualization
 Then browser open http://localhost:80
 
 已知问题：
-1、两点之间有多条边可能会有问题（考虑使用G6替换展示可以解决，但最近没时间修改）
+1、两点之间有三条以上边可能会有问题（考虑使用G6替换展示可以解决，但最近没时间修改）
 
 有问题可以：fenglex@126.com
