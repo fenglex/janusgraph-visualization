@@ -1,3 +1,5 @@
+
+
 # janusgraph-visualization
 A simple tool for janusgraph visualization.  
 (一个简单的janusgraph查询可视化工具)
@@ -13,7 +15,7 @@ Download release jar file
 nohup java -jar janusgraph-visualization-x.x.x.jar >/dev/null 2>&1&
 ```
 
-Then browser open http://localhost:8888
+Then browser open http://localhost:8888 and enter the Gremlin server host, port, and SourceName in the page.
 
 If you want to modify port
 ```$xslt
